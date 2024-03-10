@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Island_Water
+  m_Shader: {fileID: 4800000, guid: 94d85e942e091994aadfa7ebe4ae3eff, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _FoamTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap:
+        m_Texture: {fileID: 2800000, guid: 2f7589690955178408772fe05baf0c7c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MagmaMap:
+        m_Texture: {fileID: 2800000, guid: 850e5aa3af5dfd549a31c645cff2be9f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0.1, y: 0.1}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: c3aecc0726b0ce643982b7ba2fd4622d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StoneMap:
+        m_Texture: {fileID: 2800000, guid: f6471b7872c6501408f5ea3be1c19686, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WarpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaRange: 1
+    - _Amplitude: 0.1
+    - _DepthRange: 1
+    - _DiffRange: 4.7
+    - _FlowSpeed: 1
+    - _FresnelScale: 15
+    - _MagmaThickness: 0.2
+    - _MaxTessDistance: 14
+    - _MinTessDistance: 1
+    - _NormalIntensity: 0.1
+    - _NormalScale: 40
+    - _Normalstrength: 1
+    - _RainInt: 1
+    - _RimOffest: 0
+    - _SmoothThreshold: 0.07
+    - _SmoothThresholdDown: 0.068
+    - _SmoothThresholdUp: 0.0436
+    - _SpecularRange: 200
+    - _SpecularStrenght: 1
+    - _Steepness: 0
+    - _StoneHeight: 2
+    - _Tess: 20
+    - _WarpInt: 0.3
+    - _WaveLength: 2.99
+    - _WaveXSpeed: 1
+    - _WaveYSpeed: -1
+    - _WindDir: 0
+    - _WindSpeed: 0.924
+    - _YThreshold: 0.8
+    - _YThresholdOffest: 0.088
+    m_Colors:
+    - _Diffcol: {r: 1, g: 0.1273585, b: 0.1273585, a: 1}
+    - _Foam: {r: 1, g: 1, b: 1, a: 1}
+    - _FresnelCol: {r: 1, g: 1, b: 1, a: 1}
+    - _MagmaCol: {r: 1, g: 0.45460603, b: 0.10849059, a: 1}
+    - _ReflectColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimCol: {r: 0, g: 0, b: 0, a: 1}
+    - _RippleColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _StoneCol: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 1}
+    - _WaterDeepColr: {r: 1, g: 1, b: 1, a: 1}
+    - _WaterShallowColr: {r: 1, g: 1, b: 1, a: 1}
+    - _test: {r: -0.05, g: -1.18, b: 0, a: 0}
+  m_BuildTextureStacks: []
