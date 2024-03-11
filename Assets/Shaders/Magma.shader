@@ -3,11 +3,19 @@ Shader "Test/Magma"
     Properties
     {
         [Header(Magma)]
-        _MagmaCol            ("岩浆颜色", Color) = (1,1,1,1)
-        _RimOffest           ("岩浆边缘光范围偏移", Range(0,0.1)) = 0.1
-        _RimCol         ("岩浆边缘光颜色", Color) = (1.,1.,1.,1.)
-        _SmoothThresholdUp    ("着色平滑阈值（向上）", Range(0,0.1)) = 0
-        _SmoothThresholdDown    ("着色平滑阈值（向下）", Range(0,0.1)) = 0
+        [HDR]_MagmaCol1            ("岩浆颜色1", Color) = (1,1,1,1)
+        _MagmaCol2            ("岩浆颜色2", Color) = (1,1,1,1)
+        _EdgeOffest           ("岩浆边缘范围偏移", Range(-0.1,0.1)) = 0
+        _EdgeCol         ("岩浆边缘颜色", Color) = (1,1,1,1)
+        [HDR]_RimCol         ("岩浆边缘光颜色", Color) = (1,1,1,1)
+        _SmoothThresholdUp    ("边缘着色平滑阈值（向上）", Range(0,0.1)) = 0
+        _SmoothThresholdDown    ("边缘着色平滑阈值（向下）", Range(0,0.1)) = 0
+        _SmoothThresholdRim    ("着色平滑阈值边缘光", Range(0,0.5)) = 0
+        _RimThresholdOffest    ("边缘光范围阈值", Range(-1,1)) = -0.2
+        _SpecNoiseSize    ("高光噪声大小XY  强度W", Vector) = (10,0,0,0)
+        [HDR]_SpecCol1         ("岩浆高光颜色1", Color) = (1,1,1,1)
+        _SpecCol2         ("岩浆高光颜色2", Color) = (1,1,1,1)
+        _FlowDir    ("流动方向XY", Vector) = (2,2,0,0)
         
         [Header(Stone)]
         _StoneCol            ("岩石颜色", Color) = (1,1,1,1)
@@ -15,11 +23,15 @@ Shader "Test/Magma"
         _StoneHeight         ("岩石高度", float) = 1
         _YThreshold         ("岩浆平面高度", float) = 1
         _YThresholdOffest   ("岩浆平面高度偏移", Range(0,0.3)) = 0.1
+        _StoneThresholdOffest("岩石发光范围阈值", Range(-1,1)) = 0.0
+        _StoneSmoothThreshold("岩石发光范围平滑度", Range(-1,1)) = 0.0
+        [HDR]_StoneEmissCol         ("岩石自发光颜色", Color) = (1,1,1,1)
 
         [Header(Texture)]
         _HeightMap          ("置换贴图",2D)    = "white" {}
         _StoneMap          ("岩石颜色贴图",2D)    = "white" {}
-        _MagmaMap          ("岩浆颜色贴图",2D)    = "white" {}
+        _MagmaMap          ("岩浆底层噪声贴图",2D)    = "white" {}
+        _MagmaWarpMap          ("岩浆高光扰动贴图",2D)    = "white" {}
         _NormalMap          ("法线贴图",2D)    = "bump" {}
         
         [Header(Tessellation)]
@@ -73,26 +85,34 @@ Shader "Test/Magma"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GeometricTools.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Tessellation.hlsl"
+            #include "Assets/Shaders/Common.hlsl"
             
             CBUFFER_START(UnityPerMaterial)
             float _Tess;
             float _MaxTessDistance;
             float _MinTessDistance;
             float _MagmaThickness;
-            float _Steepness;
-            float _Amplitude;
-            float _WaveLength;
-            float _WindSpeed;
-            float _WindDir;
+            
             float4 _StoneCol;
-            float4 _MagmaCol;
-            float _RimOffest;
+            float4 _MagmaCol1;
+            float4 _MagmaCol2;
+            float _EdgeOffest;
+            float4 _EdgeCol;
             float4 _RimCol;
             float _SmoothThresholdUp;
             float _SmoothThresholdDown;
+            float _SmoothThresholdRim;
+            float _RimThresholdOffest;
+            float4 _SpecNoiseSize;
+            float4 _SpecCol1;
+            float4 _SpecCol2;
+            float4 _FlowDir;
             float _StoneHeight;
             float _YThreshold;
             float _YThresholdOffest;
+            float _StoneThresholdOffest;
+            float _StoneSmoothThreshold;
+            float4 _StoneEmissCol;
             float _DiffRange;
             float4 _MainTexture_Texelsize;
             
@@ -106,6 +126,9 @@ Shader "Test/Magma"
             float4 _StoneMap_ST;
             TEXTURE2D(_MagmaMap);
             float4 _MagmaMap_ST;
+            TEXTURE2D(_MagmaWarpMap);
+            SAMPLER(sampler_MagmaWarpMap);
+            float4 _MagmaWarpMap_ST;
 
             // 贴图采样器
             SamplerState smp_Point_Repeat;
@@ -135,6 +158,7 @@ Shader "Test/Magma"
                 float4 shadowCoord : TEXCOORD7;
                 float mask : TEXCOORD8;
                 float mask2 : TEXCOORD9;
+                float mask3 : TEXCOORD10;
             };
 
             // 内部因素使用SV_InsideTessFactor语义
@@ -207,26 +231,7 @@ Shader "Test/Magma"
             {
                 return patch[id];
             }
-            struct Wave{
-                float3 wavePos;
-                float3 waveNormal;
-            };
-                Wave GerstnerWave(float2 posXZ, float amp, float waveLen, float speed, int dir) // 传入的是每一个波形的效果，最后叠加，然后由UI参数统一调控。
-                {
-                    Wave o;
-                    float w = 2*PI / (waveLen * _WaveLength); 
-                    float A = amp * _Amplitude;
-                    float WA = w * A;
-                    float Q = _Steepness / (WA * 6);
-                    float dirRad = radians((dir + _WindDir) % 360);
-                    float2 D = normalize(float2(sin(dirRad), cos(dirRad)));
-                    float common = w * dot(D, posXZ) + _Time.y * sqrt(9.8 * w) * speed * _WindSpeed;
-                    float sinC = sin(common);
-                    float cosC = cos(common);
-                    o.wavePos.xz = Q * A * D.xy * cosC;
-                    o.wavePos.y = A * sinC / 6;
-                    return o;
-                }
+            
 			Varyings AfterTessVertProgram (Attributes v)
 			{
 				float Amplitude[6] = {1.8, 0.8, 0.5, 0.3, 0.1, 0.08};
@@ -246,18 +251,23 @@ Shader "Test/Magma"
                 float HeightMap = SAMPLE_TEXTURE2D_LOD(_HeightMap,sampler_HeightMap,v.uv*_HeightMap_ST.xy+_HeightMap_ST.zw,0).r;
                 v.vertex.xyz += v.normal * HeightMap * _StoneHeight;
 
-                // 截断顶点
                 o.posWS = TransformObjectToWorld(v.vertex);
-                if(o.posWS.y < waveOffset.y+_YThreshold)
-                {
-                    o.posWS.y = waveOffset.y+_YThreshold;
-                }
 
                 // 计算遮罩
-                float mask2 = smoothstep(o.posWS.y-_SmoothThresholdDown,o.posWS.y+_SmoothThresholdDown, waveOffset.y+_YThreshold+(_YThresholdOffest -_RimOffest));
+                
                 float mask = smoothstep(o.posWS.y-_SmoothThresholdUp,o.posWS.y+_SmoothThresholdUp, waveOffset.y+_YThreshold+_YThresholdOffest);
+                float mask2 = smoothstep(o.posWS.y-_SmoothThresholdDown,o.posWS.y+_SmoothThresholdDown, waveOffset.y+_YThreshold+(_YThresholdOffest -_EdgeOffest));
+                float mask3 = smoothstep(o.posWS.y-_SmoothThresholdRim,o.posWS.y+_SmoothThresholdRim, waveOffset.y+_YThreshold+_RimThresholdOffest);
                 o.mask = clamp(mask,0,1);
                 o.mask2 = clamp(mask2,0,1);
+                o.mask3 = clamp(mask3,0,1);
+
+                // 截断顶点
+                if(o.posWS.y < waveOffset.y + _YThreshold)
+                {
+                    o.posWS.y = waveOffset.y + _YThreshold;
+                }
+                
                 // 增加岩浆厚度
                 o.posWS.y += v.normal.y*mask2*_MagmaThickness;
 
@@ -300,12 +310,13 @@ Shader "Test/Magma"
             {   
                 // 准备向量
                 Light light = GetMainLight(i.shadowCoord);//获取主光源数据
+                float2 uv = i.uv;
                 float shadow = MainLightRealtimeShadow(i.shadowCoord);
                 float3 lDir = normalize(light.direction);
                 float3 nDirWS = (0,0,0);
                 if(i.posWS.y > i.waveOffset.y+_YThreshold+0.02)
                 {
-                    float3 nDirTS = normalize(UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,i.uv*_HeightMap_ST.xy+_HeightMap_ST.zw)));
+                    float3 nDirTS = normalize(UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv*_HeightMap_ST.xy+_HeightMap_ST.zw)));
                     float3x3 TBN = float3x3(i.tDirWS,i.bDirWS,i.nDirWS);
                     nDirWS = normalize(mul(nDirTS,TBN));
                 }
@@ -317,23 +328,37 @@ Shader "Test/Magma"
                 float nl = max(saturate(dot(nDirWS, lDir)), 0.000001);
                 
                 // 提取信息
-                float3 magmaBaseCol = SAMPLE_TEXTURE2D(_MagmaMap,smp_Point_Repeat,i.uv*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
-                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,i.uv*_StoneMap_ST.xy+_StoneMap_ST.zw).rgb;
+                float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap,smp_Point_Repeat,uv*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
+                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,uv*_StoneMap_ST.xy+_StoneMap_ST.zw).rgb;
+                float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap,sampler_MagmaWarpMap,uv*_MagmaWarpMap_ST.xy+_MagmaWarpMap_ST.zw*_Time.y).rgb;
 
                 // 光照计算
                     // 岩石部分
                     float lambert = step(nl,_DiffRange);
                     float3 stoneCol = stoneBaseCol * lambert * _StoneCol.rgb;
-
+                    float mask4 = smoothstep(i.posWS.y-_StoneSmoothThreshold,i.posWS.y+_StoneSmoothThreshold, i.waveOffset.y+_YThreshold+_StoneThresholdOffest);
+                    stoneCol = lerp(stoneCol,_StoneEmissCol.rgb,mask4);
                     // 岩浆部分
-                    float magmaRimMask = clamp(min(i.mask,(1-i.mask2)),0,1);
-                    float3 rimCol = _RimCol.rgb;
-                    float3 magmaCol = lerp(magmaBaseCol * _MagmaCol.rgb, rimCol,magmaRimMask);
+                    float magmaEdgeMask = clamp(min(i.mask,(1-i.mask2)),0,1);
+                    float2 uvBias = ((magmaWarp.rg - 0.5)*float2(_FlowDir.z,_FlowDir.w));
+                    
+                    float2 warpUv = uv + uvBias + float2(_FlowDir.x*_Time.x,_FlowDir.y*_Time.x);
+                    float3 specCol = smoothstep(0.14,0.15,noise(warpUv*_SpecNoiseSize.x));
+                    specCol -= smoothstep(0.185,0.29,noise(warpUv*_SpecNoiseSize.x));
+                    specCol += smoothstep(0.185,0.19,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;
+                    specCol -= smoothstep(0.12,0.4,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;
+                    specCol = lerp(_SpecCol1.rgb,_SpecCol2.rgb,(1-specCol.x))*specCol.x;
+
+                    float3 edgeCol = _EdgeCol.rgb;
+                    float3 rimCol = _RimCol.rgb*(magmaWarp+0.3);
+                    float3 baseCol = lerp(_MagmaCol1.rgb,_MagmaCol2.rgb,magmaBaseColMask.r);
+                    float3 flowCol = lerp(rimCol.rgb,baseCol,i.mask3)+specCol;
+                    float3 magmaCol = lerp(flowCol, edgeCol, magmaEdgeMask);
 
                 // 混合
-                float3 finalRGB = lerp(stoneCol,magmaCol,i.mask);
+                float3 finalRGB = lerp(stoneCol,magmaCol,i.mask2);
                 return float4(finalRGB,1.0);
-                //return i.mask;
+                //return i.mask2;
             }
 
             ENDHLSL
