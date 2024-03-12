@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _StoneMap:
-        m_Texture: {fileID: 2800000, guid: f6471b7872c6501408f5ea3be1c19686, type: 3}
+        m_Texture: {fileID: 2800000, guid: ada0e376f68e5794ba6951d256e0a29c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WarpMap:
@@ -73,18 +73,18 @@ Material:
     - _FlowSpeed: 1
     - _FresnelScale: 15
     - _MagmaThickness: 0.1
-    - _MaxTessDistance: 170
+    - _MaxTessDistance: 200
     - _MinTessDistance: 1
     - _NormalIntensity: 0.1
     - _NormalScale: 40
     - _Normalstrength: 1
     - _RainInt: 1
     - _RimOffest: 0
-    - _RimThresholdOffest: -0.09
+    - _RimThresholdOffest: -0.4
     - _RimhresholdOffest: -0.02
     - _SmoothThreshold: 0.07
     - _SmoothThresholdDown: 0.0318
-    - _SmoothThresholdRim: 0.113
+    - _SmoothThresholdRim: 0.202
     - _SmoothThresholdUp: 0.1
     - _SpecNoiseSize: 25.3
     - _SpecularRange: 200
@@ -115,6 +115,7 @@ Material:
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimCol: {r: 18.287483, g: 0.7756208, b: 0, a: 1}
     - _RippleColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowCol: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 0}
     - _SpecCol1: {r: 0.9017273, g: 0.29742837, b: 0, a: 1}
     - _SpecCol2: {r: 1, g: 0.6156863, b: 0, a: 1}
     - _SpecNoiseSize: {r: 8, g: 10, b: 0, a: 0.54}

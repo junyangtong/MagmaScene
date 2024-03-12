@@ -28,6 +28,9 @@ Shader "Test/Magma"
         _StoneSmoothThreshold("岩石发光范围平滑度", Range(-1,1)) = 0.0
         [HDR]_StoneEmissCol         ("岩石自发光颜色", Color) = (1,1,1,1)
 
+        [Header(Shadow)]
+        _ShadowCol          ("阴影颜色", Color) = (0,0,0,0)
+
         [Header(Texture)]
         _HeightMap          ("置换贴图",2D)    = "white" {}
         _StoneMap          ("岩石颜色贴图",2D)    = "white" {}
@@ -60,10 +63,10 @@ Shader "Test/Magma"
         
         Pass
         {
-            Name "Pass"
+            Name "MainPass"
             // Render State
             Cull Back
-
+            
             HLSLPROGRAM
 
             #pragma require tessellation
@@ -87,6 +90,7 @@ Shader "Test/Magma"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GeometricTools.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Tessellation.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
             #include "Assets/Shaders/Common.hlsl"
             
             CBUFFER_START(UnityPerMaterial)
@@ -116,6 +120,7 @@ Shader "Test/Magma"
             float _StoneThresholdOffest;
             float _StoneSmoothThreshold;
             float4 _StoneEmissCol;
+            float4 _ShadowCol;
             float _DiffRange;
             float4 _MainTexture_Texelsize;
             
@@ -128,7 +133,6 @@ Shader "Test/Magma"
             TEXTURE2D(_AOMap);
             SAMPLER(sampler_AOMap);
             TEXTURE2D(_StoneMap);
-            float4 _StoneMap_ST;
             TEXTURE2D(_MagmaMap);
             float4 _MagmaMap_ST;
             TEXTURE2D(_MagmaWarpMap);
@@ -157,13 +161,13 @@ Shader "Test/Magma"
                 float2 uv : TEXCOORD0;
                 float3 posWS:TEXCOORD1;
                 float4 scrPos	 :TEXCOORD2;  
-                float3 tDirWS : TEXCOORD4;
-                float3 bDirWS : TEXCOORD5;
-                float3 waveOffset : TEXCOORD6;
-                float4 shadowCoord : TEXCOORD7;
-                float mask : TEXCOORD8;
-                float mask2 : TEXCOORD9;
-                float mask3 : TEXCOORD10;
+                float3 tDirWS : TEXCOORD3;
+                float3 bDirWS : TEXCOORD4;
+                float3 waveOffset : TEXCOORD5;
+                float4 shadowCoord : TEXCOORD6;
+                float mask : TEXCOORD7;
+                float mask2 : TEXCOORD8;
+                float mask3 : TEXCOORD9;
             };
 
             // 内部因素使用SV_InsideTessFactor语义
@@ -327,7 +331,7 @@ Shader "Test/Magma"
                 
                 // 提取信息
                 float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap,smp_Point_Repeat,uv*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
-                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,uv*_StoneMap_ST.xy+_StoneMap_ST.zw).rgb;
+                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).rgb;
                 float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap,sampler_MagmaWarpMap,uv*_MagmaWarpMap_ST.xy+_MagmaWarpMap_ST.zw*_Time.y).rgb;
                 float aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).r;
 
@@ -356,8 +360,9 @@ Shader "Test/Magma"
 
                 // 混合
                 float3 finalRGB = lerp(stoneCol,magmaCol,i.mask2);
+                finalRGB = lerp(finalRGB*_ShadowCol.rgb,finalRGB,shadow);
                 return float4(finalRGB,1.0);
-                //return i.mask2;
+                //return shadow;
             }
 
             ENDHLSL
