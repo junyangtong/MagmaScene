@@ -46,8 +46,8 @@ Shader "Test/Magma"
         _MagmaThickness     ("岩浆厚度", Range(0,1)) = 0
         [Header(Genstner)]
         _Steepness          ("重力",Range(0,5)) = 0.8
-        _Amplitude          ("振幅",Range(0,1)) = 1
-        _WaveLength         ("波长",Range(0,5)) = 1
+        _Amplitude          ("振幅",Range(0,0.2)) = 0.06
+        _WaveLength         ("波长",Range(0,10)) = 1
         _WindSpeed          ("风速",Range(0,1)) = 1
         _WindDir            ("风向",Range(0,360)) = 0
         
@@ -249,12 +249,6 @@ Shader "Test/Magma"
                 int WindDir[6] = {11, 90, 166, 300, 10, 180};
 				Varyings o;
                 float3 waveOffset = float3(0.0, 0.0, 0.0);
-                // 计算水面波形
-                for(int i = 0; i < 6; i++)
-                {
-                    Wave wave = GerstnerWave(v.vertex.xz, Amplitude[i], WaveLen[i], WindSpeed[i], WindDir[i]);
-                    waveOffset += wave.wavePos;                    
-                }
                 
                 // 置换顶点位置
                 float HeightMap = SAMPLE_TEXTURE2D_LOD(_HeightMap,sampler_HeightMap,v.uv*_HeightMap_ST.xy+_HeightMap_ST.zw,0).r;
@@ -262,6 +256,13 @@ Shader "Test/Magma"
 
                 o.posWS = TransformObjectToWorld(v.vertex);
 
+                // 计算水面波形
+                for(int i = 0; i < 6; i++)
+                {
+                    Wave wave = GerstnerWave(o.posWS.xz, Amplitude[i], WaveLen[i], WindSpeed[i], WindDir[i]);
+                    waveOffset += wave.wavePos;                    
+                }
+                
                 // 计算遮罩
                 
                 float mask = smoothstep(o.posWS.y-_SmoothThresholdUp,o.posWS.y+_SmoothThresholdUp, waveOffset.y+_YThreshold+_YThresholdOffest);
@@ -332,7 +333,7 @@ Shader "Test/Magma"
                 // 提取信息
                 float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap,smp_Point_Repeat,uv*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
                 float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).rgb;
-                float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap,sampler_MagmaWarpMap,uv*_MagmaWarpMap_ST.xy+_MagmaWarpMap_ST.zw*_Time.y).rgb;
+                float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap,sampler_MagmaWarpMap,i.posWS.xz*_MagmaWarpMap_ST.xy+_MagmaWarpMap_ST.zw*_Time.y).rgb;
                 float aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).r;
 
                 // 光照计算
@@ -345,7 +346,7 @@ Shader "Test/Magma"
                     float magmaEdgeMask = clamp(min(i.mask,(1-i.mask2)),0,1);
                     float2 uvBias = ((magmaWarp.rg - 0.5)*float2(_FlowDir.z,_FlowDir.w));
                     
-                    float2 warpUv = uv + uvBias + float2(_FlowDir.x*_Time.x,_FlowDir.y*_Time.x);
+                    float2 warpUv = i.posWS.xz + uvBias + float2(_FlowDir.x*_Time.x,_FlowDir.y*_Time.x);
                     float3 specCol = smoothstep(0.14,0.15,noise(warpUv*_SpecNoiseSize.x));
                     specCol -= smoothstep(0.185,0.29,noise(warpUv*_SpecNoiseSize.x));
                     specCol += smoothstep(0.185,0.19,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;

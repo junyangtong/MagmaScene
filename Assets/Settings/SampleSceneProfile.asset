@@ -21,10 +21,10 @@ MonoBehaviour:
     m_Value: 1.55
   intensity:
     m_OverrideState: 1
-    m_Value: 0.39
+    m_Value: 0.5
   scatter:
     m_OverrideState: 1
-    m_Value: 0.474
+    m_Value: 0.49
   clamp:
     m_OverrideState: 0
     m_Value: 65472
@@ -73,6 +73,29 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.4
   rounded:
+    m_OverrideState: 0
+    m_Value: 0
+--- !u!114 &-2071136824536858520
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876629275d5f134408506d75b3b29ba6, type: 3}
+  m_Name: BrightnessSaturationContrast
+  m_EditorClassIdentifier: 
+  active: 1
+  <displayName>k__BackingField: 
+  brightness:
+    m_OverrideState: 0
+    m_Value: 0
+  saturation:
+    m_OverrideState: 0
+    m_Value: 0
+  contrast:
     m_OverrideState: 0
     m_Value: 0
 --- !u!114 &11400000
