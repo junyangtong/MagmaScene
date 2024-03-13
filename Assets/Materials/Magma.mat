@@ -37,7 +37,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MagmaMap:
         m_Texture: {fileID: 2800000, guid: 1fc952f953e634f43adda96d0febff93, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0.01, y: 0.01}
     - _MagmaSpecMap:
         m_Texture: {fileID: 0}
@@ -66,15 +66,16 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaRange: 1
-    - _Amplitude: 0.06
+    - _Amplitude: 0.1
     - _DepthRange: 1
     - _DiffRange: 0.49
+    - _DisStrength: 1.64
     - _EdgeOffest: 0.019
     - _FlowSpeed: 1
     - _FresnelScale: 15
     - _MagmaThickness: 0.1
-    - _MaxTessDistance: 41
-    - _MinTessDistance: 1
+    - _MaxTessDistance: 40
+    - _MinTessDistance: 10
     - _NormalIntensity: 0.1
     - _NormalScale: 40
     - _Normalstrength: 1

@@ -1,4 +1,4 @@
-Shader "Test/Magma"
+Shader "Magma/Magma"
 {
     Properties
     {
@@ -41,8 +41,9 @@ Shader "Test/Magma"
         
         [Header(Tessellation)]
         _Tess               ("细分程度", Range(1, 32)) = 20
-        _MaxTessDistance    ("细分最大距离", Range(1, 320)) = 20
-        _MinTessDistance    ("细分最小距离", Range(1, 320)) = 1
+        _MaxTessDistance    ("细分最大距离", Range(1, 100)) = 20
+        _MinTessDistance    ("细分最小距离", Range(1, 50)) = 1
+        _DisStrength    ("视锥体裁剪", Range(0, 2)) = 1
         _MagmaThickness     ("岩浆厚度", Range(0,1)) = 0
         [Header(Genstner)]
         _Steepness          ("重力",Range(0,5)) = 0.8
@@ -64,7 +65,10 @@ Shader "Test/Magma"
         Pass
         {
             Name "MainPass"
-            // Render State
+            Tags
+            {
+                "LightMode" = "UniversalForward"
+            }
             Cull Back
             
             HLSLPROGRAM
@@ -97,6 +101,7 @@ Shader "Test/Magma"
             float _Tess;
             float _MaxTessDistance;
             float _MinTessDistance;
+            float _DisStrength;
             float _MagmaThickness;
             
             float4 _StoneCol1;
@@ -134,6 +139,7 @@ Shader "Test/Magma"
             SAMPLER(sampler_AOMap);
             TEXTURE2D(_StoneMap);
             TEXTURE2D(_MagmaMap);
+            SAMPLER(sampler_MagmaMap);
             float4 _MagmaMap_ST;
             TEXTURE2D(_MagmaWarpMap);
             SAMPLER(sampler_MagmaWarpMap);
@@ -200,15 +206,7 @@ Shader "Test/Magma"
         
                 return p;
             }
-
-            // 随着距相机的距离减少细分数
-            float CalcDistanceTessFactor(float4 vertex, float minDist, float maxDist, float tess)
-            {
-                float3 worldPosition = TransformObjectToWorld(vertex.xyz);
-                float dist = distance(worldPosition,  GetCameraPositionWS());
-                float f = clamp(1.0 - (dist - minDist) / (maxDist - minDist), 0.01, 1.0) * tess;
-                return (f);
-            }
+            
             // 根据其距离相机的位置来设置细分因子
             TessellationFactors MyPatchConstantFunction(InputPatch<ControlPoint, 3> patch)
             {
@@ -216,16 +214,27 @@ Shader "Test/Magma"
                 float maxDist = _MaxTessDistance;
             
                 TessellationFactors f;
-            
+                
                 float edge0 = CalcDistanceTessFactor(patch[0].vertex, minDist, maxDist, _Tess);
                 float edge1 = CalcDistanceTessFactor(patch[1].vertex, minDist, maxDist, _Tess);
                 float edge2 = CalcDistanceTessFactor(patch[2].vertex, minDist, maxDist, _Tess);
-            
+
+                float3 p0 = mul(unity_ObjectToWorld, patch[0].vertex).xyz;
+                float3 p1 = mul(unity_ObjectToWorld, patch[1].vertex).xyz;
+                float3 p2 = mul(unity_ObjectToWorld, patch[2].vertex).xyz;
+                float bias = -0.5 * _DisStrength;
+                if (TriangleIsCulled(p0, p1, p2, bias)) 
+                {
+                    f.edge[0] = f.edge[1] = f.edge[2] = f.inside = 0;
+                }
+                else 
+                {
                 // make sure there are no gaps between different tessellated distances, by averaging the edges out.
                 f.edge[0] = (edge1 + edge2) / 2;
                 f.edge[1] = (edge2 + edge0) / 2;
                 f.edge[2] = (edge0 + edge1) / 2;
                 f.inside = (edge0 + edge1 + edge2) / 3;
+                }
                 return f;
             }
 
@@ -233,7 +242,7 @@ Shader "Test/Magma"
             [domain("tri")]//明确地告诉编译器正在处理三角形，其他选项：
             [outputcontrolpoints(3)]//明确地告诉编译器每个补丁输出三个控制点
             [outputtopology("triangle_cw")]//当GPU创建新三角形时，它需要知道我们是否要按顺时针或逆时针定义它们
-            [partitioning("integer")]//告知GPU应该如何分割补丁，现在，仅使用整数模式
+            [partitioning("fractional_even")]//告知GPU应该如何分割补丁
             [patchconstantfunc("MyPatchConstantFunction")]//GPU还必须知道应将补丁切成多少部分。每个补丁不同。必须提供一个补丁函数（Patch Constant Functions）
             [maxtessfactor(64.0f)] 
             ControlPoint HullProgram(InputPatch<ControlPoint, 3> patch, uint id : SV_OutputControlPointID)
@@ -328,10 +337,10 @@ Shader "Test/Magma"
                 float3x3 TBN = float3x3(i.tDirWS,i.bDirWS,i.nDirWS);
                 nDirWS = normalize(mul(nDirTS,TBN));
                 // 准备中间数据（点积结果）
-                float nl = max(saturate(dot(nDirWS, lDir)), 0.000001);
+                float nl = saturate(dot(nDirWS, lDir));
                 
                 // 提取信息
-                float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap,smp_Point_Repeat,uv*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
+                float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap,sampler_MagmaMap,i.posWS.xz*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
                 float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).rgb;
                 float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap,sampler_MagmaWarpMap,i.posWS.xz*_MagmaWarpMap_ST.xy+_MagmaWarpMap_ST.zw*_Time.y).rgb;
                 float aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).r;
