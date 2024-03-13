@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: da90c04dccbb96f4aa0653f4a83db3bc
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _Stars: {instanceID: 0}
+  - _Cloud: {instanceID: 0}
+  - _StarNoise: {instanceID: 0}
+  - _GalaxyNoiseTex: {instanceID: 0}
+  - _GalaxyTex: {instanceID: 0}
+  - _DistortTex: {instanceID: 0}
+  - _CloudNoise: {instanceID: 0}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

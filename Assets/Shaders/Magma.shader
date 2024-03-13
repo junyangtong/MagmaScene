@@ -3,47 +3,48 @@ Shader "Magma/Magma"
     Properties
     {
         [Header(Magma)]
-        [HDR]_MagmaCol1            ("岩浆颜色1", Color) = (1,1,1,1)
-        _MagmaCol2            ("岩浆颜色2", Color) = (1,1,1,1)
-        _EdgeOffest           ("岩浆边缘范围偏移", Range(-0.1,0.1)) = 0
-        _EdgeCol         ("岩浆边缘颜色", Color) = (1,1,1,1)
-        [HDR]_RimCol         ("岩浆边缘光颜色", Color) = (1,1,1,1)
-        _SmoothThresholdUp    ("边缘着色平滑阈值（向上）", Range(0,0.1)) = 0
+        [HDR]_MagmaCol1             ("岩浆颜色1", Color) = (1,1,1,1)
+        _MagmaCol2                  ("岩浆颜色2", Color) = (1,1,1,1)
+        _EdgeOffest                 ("岩浆边缘范围偏移", Range(-0.1,0.1)) = 0
+        _EdgeCol                    ("岩浆边缘颜色", Color) = (1,1,1,1)
+        [HDR]_RimCol            ("岩浆边缘光颜色", Color) = (1,1,1,1)
+        _SmoothThresholdUp      ("边缘着色平滑阈值（向上）", Range(0,0.1)) = 0
         _SmoothThresholdDown    ("边缘着色平滑阈值（向下）", Range(0,0.1)) = 0
-        _SmoothThresholdRim    ("着色平滑阈值边缘光", Range(0,0.5)) = 0
-        _RimThresholdOffest    ("边缘光范围阈值", Range(-1,1)) = -0.2
-        _SpecNoiseSize    ("高光噪声大小XY  强度W", Vector) = (10,0,0,0)
-        [HDR]_SpecCol1         ("岩浆高光颜色1", Color) = (1,1,1,1)
-        _SpecCol2         ("岩浆高光颜色2", Color) = (1,1,1,1)
-        _FlowDir    ("流动方向XY", Vector) = (2,2,0,0)
-        
+        _SmoothThresholdRim     ("着色平滑阈值边缘光", Range(0,0.5)) = 0
+        _RimThresholdOffest     ("边缘光范围阈值", Range(-1,1)) = -0.2
+        _SpecNoiseSize          ("高光噪声大小XY  强度W", Vector) = (10,0,0,0)
+        [HDR]_SpecCol1          ("岩浆高光颜色1", Color) = (1,1,1,1)
+        _SpecCol2               ("岩浆高光颜色2", Color) = (1,1,1,1)
+        _FlowDir                ("流动方向XY", Vector) = (2,2,0,0)
+        [Toggle] _T1            ("实时计算噪声纹理", Float) = 0
         [Header(Stone)]
-        _StoneCol1            ("岩石颜色暗面", Color) = (1,1,1,1)
-        _StoneCol2            ("岩石颜色亮面", Color) = (1,1,1,1)
-        _DiffRange          ("暗面分割阈值", float) = 1
-        _StoneHeight         ("岩石高度", float) = 1
-        _YThreshold         ("岩浆平面高度", float) = 1
-        _YThresholdOffest   ("岩浆平面高度偏移", Range(0,0.3)) = 0.1
-        _StoneThresholdOffest("岩石发光范围阈值", Range(-1,1)) = 0.0
-        _StoneSmoothThreshold("岩石发光范围平滑度", Range(-1,1)) = 0.0
-        [HDR]_StoneEmissCol         ("岩石自发光颜色", Color) = (1,1,1,1)
+        _StoneCol1              ("岩石颜色暗面", Color) = (1,1,1,1)
+        _StoneCol2              ("岩石颜色亮面", Color) = (1,1,1,1)
+        _DiffRange              ("暗面分割阈值", Float) = 1
+        _StoneHeight            ("岩石高度", Float) = 1
+        _YThreshold             ("岩浆平面高度", Float) = 1
+        _YThresholdOffest       ("岩浆平面高度偏移", Range(0,0.3)) = 0.1
+        _StoneThresholdOffest   ("岩石发光范围阈值", Range(-1,1)) = 0.0
+        _StoneSmoothThreshold   ("岩石发光范围平滑度", Range(-1,1)) = 0.0
+        [HDR]_StoneEmissCol     ("岩石自发光颜色", Color) = (1,1,1,1)
 
         [Header(Shadow)]
         _ShadowCol          ("阴影颜色", Color) = (0,0,0,0)
 
         [Header(Texture)]
         _HeightMap          ("置换贴图",2D)    = "white" {}
-        _StoneMap          ("岩石颜色贴图",2D)    = "white" {}
+        _StoneMap           ("岩石颜色贴图",2D)    = "white" {}
         _NormalMap          ("法线贴图",2D)    = "bump" {}
-        _AOMap          ("环境光遮蔽贴图",2D)    = "white" {}
-        _MagmaMap          ("岩浆底层噪声贴图",2D)    = "white" {}
-        _MagmaWarpMap          ("岩浆高光扰动贴图",2D)    = "white" {}
+        _AOMap              ("环境光遮蔽贴图",2D)    = "white" {}
+        _MagmaMap           ("岩浆底层噪声贴图",2D)    = "white" {}
+        _MagmaWarpMap       ("岩浆高光扰动贴图",2D)    = "white" {}
+        _MagmaNoiseMap       ("岩浆高光噪声贴图",2D)    = "white" {}
         
         [Header(Tessellation)]
-        _Tess               ("细分程度", Range(1, 32)) = 20
-        _MaxTessDistance    ("细分最大距离", Range(1, 100)) = 20
-        _MinTessDistance    ("细分最小距离", Range(1, 50)) = 1
-        _DisStrength    ("视锥体裁剪", Range(0, 2)) = 1
+        _Tess               ("细分程度", Range(1,32)) = 20
+        _MaxTessDistance    ("细分最大距离", Range(1,100)) = 20
+        _MinTessDistance    ("细分最小距离", Range(1,50)) = 1
+        _DisStrength        ("视锥体裁剪", Range(0,2)) = 1
         _MagmaThickness     ("岩浆厚度", Range(0,1)) = 0
         [Header(Genstner)]
         _Steepness          ("重力",Range(0,5)) = 0.8
@@ -88,7 +89,7 @@ Shader "Magma/Magma"
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
 			#pragma multi_compile _ Anti_Aliasing_ON
-
+            #pragma shader_feature _T1_ON
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -96,6 +97,7 @@ Shader "Magma/Magma"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Tessellation.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
             #include "Assets/Shaders/Common.hlsl"
+            #include "Assets/Shaders/DynamicTessellationFactors.hlsl"
             
             CBUFFER_START(UnityPerMaterial)
             float _Tess;
@@ -115,7 +117,6 @@ Shader "Magma/Magma"
             float _SmoothThresholdDown;
             float _SmoothThresholdRim;
             float _RimThresholdOffest;
-            float4 _SpecNoiseSize;
             float4 _SpecCol1;
             float4 _SpecCol2;
             float4 _FlowDir;
@@ -207,7 +208,7 @@ Shader "Magma/Magma"
                 return p;
             }
             
-            // 根据其距离相机的位置来设置细分因子
+            // 设置细分因子
             TessellationFactors MyPatchConstantFunction(InputPatch<ControlPoint, 3> patch)
             {
                 float minDist = _MinTessDistance;
@@ -260,7 +261,7 @@ Shader "Magma/Magma"
                 float3 waveOffset = float3(0.0, 0.0, 0.0);
                 
                 // 置换顶点位置
-                float HeightMap = SAMPLE_TEXTURE2D_LOD(_HeightMap,sampler_HeightMap,v.uv*_HeightMap_ST.xy+_HeightMap_ST.zw,0).r;
+                float HeightMap = SAMPLE_TEXTURE2D_LOD(_HeightMap, sampler_HeightMap, v.uv * _HeightMap_ST.xy + _HeightMap_ST.zw, 0).r;
                 v.vertex.xyz += v.normal * HeightMap * _StoneHeight;
 
                 o.posWS = TransformObjectToWorld(v.vertex);
@@ -274,12 +275,12 @@ Shader "Magma/Magma"
                 
                 // 计算遮罩
                 
-                float mask = smoothstep(o.posWS.y-_SmoothThresholdUp,o.posWS.y+_SmoothThresholdUp, waveOffset.y+_YThreshold+_YThresholdOffest);
-                float mask2 = smoothstep(o.posWS.y-_SmoothThresholdDown,o.posWS.y+_SmoothThresholdDown, waveOffset.y+_YThreshold+(_YThresholdOffest -_EdgeOffest));
-                float mask3 = smoothstep(o.posWS.y-_SmoothThresholdRim,o.posWS.y+_SmoothThresholdRim, waveOffset.y+_YThreshold+_RimThresholdOffest);
-                o.mask = clamp(mask,0,1);
-                o.mask2 = clamp(mask2,0,1);
-                o.mask3 = clamp(mask3,0,1);
+                float mask = smoothstep(o.posWS.y - _SmoothThresholdUp, o.posWS.y + _SmoothThresholdUp, waveOffset.y + _YThreshold + _YThresholdOffest);
+                float mask2 = smoothstep(o.posWS.y - _SmoothThresholdDown, o.posWS.y + _SmoothThresholdDown, waveOffset.y + _YThreshold + (_YThresholdOffest - _EdgeOffest));
+                float mask3 = smoothstep(o.posWS.y - _SmoothThresholdRim, o.posWS.y + _SmoothThresholdRim, waveOffset.y + _YThreshold + _RimThresholdOffest);
+                o.mask = clamp(mask, 0, 1);
+                o.mask2 = clamp(mask2, 0, 1);
+                o.mask3 = clamp(mask3, 0, 1);
 
                 // 截断顶点
                 if(o.posWS.y < waveOffset.y + _YThreshold)
@@ -333,48 +334,92 @@ Shader "Magma/Magma"
                 float shadow = MainLightRealtimeShadow(i.shadowCoord);
                 float3 lDir = normalize(light.direction);
                 float3 nDirWS = (0,0,0);
-                float3 nDirTS = normalize(UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv*_HeightMap_ST.xy+_HeightMap_ST.zw)));
-                float3x3 TBN = float3x3(i.tDirWS,i.bDirWS,i.nDirWS);
-                nDirWS = normalize(mul(nDirTS,TBN));
+                float3 nDirTS = normalize(UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uv * _HeightMap_ST.xy + _HeightMap_ST.zw)));
+                float3x3 TBN = float3x3(i.tDirWS, i.bDirWS, i.nDirWS);
+                nDirWS = normalize(mul(nDirTS, TBN));
                 // 准备中间数据（点积结果）
                 float nl = saturate(dot(nDirWS, lDir));
                 
                 // 提取信息
-                float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap,sampler_MagmaMap,i.posWS.xz*_MagmaMap_ST.xy+_MagmaMap_ST.zw*_Time.y).rgb;
-                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap,smp_Point_Repeat,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).rgb;
-                float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap,sampler_MagmaWarpMap,i.posWS.xz*_MagmaWarpMap_ST.xy+_MagmaWarpMap_ST.zw*_Time.y).rgb;
-                float aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap,uv*_HeightMap_ST.xy+_HeightMap_ST.zw).r;
+                float2 uvWS = i.posWS.xz;
+                float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap, sampler_MagmaMap, uvWS * _MagmaMap_ST.xy + _MagmaMap_ST.zw * _Time.y).rgb;
+                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap, smp_Point_Repeat, uv * _HeightMap_ST.xy + _HeightMap_ST.zw).rgb;
+                float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap, sampler_MagmaWarpMap, uvWS * _MagmaWarpMap_ST.xy + _MagmaWarpMap_ST.zw * _Time.y).rgb;
+                float aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap, uv * _HeightMap_ST.xy + _HeightMap_ST.zw).r;
 
                 // 光照计算
                     // 岩石部分
-                    float lambert = smoothstep(_DiffRange-0.02,_DiffRange+0.02,nl);
-                    float3 stoneCol = lerp(stoneBaseCol*_StoneCol1.rgb,stoneBaseCol*_StoneCol2.rgb,lambert);
-                    float mask4 = smoothstep(i.posWS.y-_StoneSmoothThreshold,i.posWS.y+_StoneSmoothThreshold, i.waveOffset.y+_YThreshold+_StoneThresholdOffest);
-                    stoneCol = lerp(stoneCol,_StoneEmissCol.rgb,mask4)*aoMap;
+                    float lambert = smoothstep(_DiffRange - 0.02, _DiffRange + 0.02, nl);
+                    float3 stoneCol = lerp(stoneBaseCol * _StoneCol1.rgb,stoneBaseCol * _StoneCol2.rgb, lambert);
+                    float mask4 = smoothstep(i.posWS.y - _StoneSmoothThreshold, i.posWS.y + _StoneSmoothThreshold, i.waveOffset.y + _YThreshold + _StoneThresholdOffest);
+                    stoneCol = lerp(stoneCol, _StoneEmissCol.rgb,mask4) * aoMap;
                     // 岩浆部分
-                    float magmaEdgeMask = clamp(min(i.mask,(1-i.mask2)),0,1);
-                    float2 uvBias = ((magmaWarp.rg - 0.5)*float2(_FlowDir.z,_FlowDir.w));
+                    float magmaEdgeMask = clamp(min(i.mask, (1 - i.mask2)), 0, 1);
+                    float2 uvBias = ((magmaWarp.rg - 0.5) * float2(_FlowDir.z, _FlowDir.w));
                     
-                    float2 warpUv = i.posWS.xz + uvBias + float2(_FlowDir.x*_Time.x,_FlowDir.y*_Time.x);
-                    float3 specCol = smoothstep(0.14,0.15,noise(warpUv*_SpecNoiseSize.x));
-                    specCol -= smoothstep(0.185,0.29,noise(warpUv*_SpecNoiseSize.x));
-                    specCol += smoothstep(0.185,0.19,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;
-                    specCol -= smoothstep(0.12,0.4,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;
-                    specCol = lerp(_SpecCol1.rgb,_SpecCol2.rgb,(1-specCol.x))*specCol.x;
+                    float2 warpUv = uvWS + uvBias + float2(_FlowDir.x * _Time.x, _FlowDir.y * _Time.x);
+                    float specNoise = 0;
 
+                    #ifdef _T1_ON
+                    specNoise = RealTimePerlinNoises(warpUv);
+                    #else
+                    specNoise = SamplePerlinNoises(warpUv);
+                    #endif
+                    float3 specCol = lerp(_SpecCol1.rgb, _SpecCol2.rgb, (1 - specNoise)) * specNoise;
                     float3 edgeCol = _EdgeCol.rgb;
-                    float3 rimCol = _RimCol.rgb*(magmaWarp+0.3);
-                    float3 baseCol = lerp(_MagmaCol1.rgb,_MagmaCol2.rgb,magmaBaseColMask.r);
-                    float3 flowCol = lerp(rimCol.rgb,baseCol,i.mask3)+specCol;
+                    float3 rimCol = _RimCol.rgb*(magmaWarp + 0.3);
+                    float3 baseCol = lerp(_MagmaCol1.rgb, _MagmaCol2.rgb, magmaBaseColMask.r);
+                    float3 flowCol = lerp(rimCol.rgb, baseCol, i.mask3) + specCol;
                     float3 magmaCol = lerp(flowCol, edgeCol, magmaEdgeMask);
 
                 // 混合
-                float3 finalRGB = lerp(stoneCol,magmaCol,i.mask2);
-                finalRGB = lerp(finalRGB*_ShadowCol.rgb,finalRGB,shadow);
-                return float4(finalRGB,1.0);
+                float3 finalRGB = lerp(stoneCol, magmaCol, i.mask2);
+                finalRGB = lerp(finalRGB * _ShadowCol.rgb, finalRGB, shadow);
+                
+                return float4(finalRGB, 1.0);
                 //return shadow;
             }
 
+            ENDHLSL
+        }
+        
+        // This pass is used when drawing to a _CameraNormalsTexture texture
+        Pass
+        {
+            Name "DepthNormals"
+            Tags{"LightMode" = "DepthNormals"}
+
+            ZWrite On
+            Cull[_Cull]
+
+            HLSLPROGRAM
+            #pragma exclude_renderers gles gles3 glcore
+            #pragma target 4.5
+
+            #pragma vertex DepthNormalsVertex
+            #pragma fragment DepthNormalsFragment
+
+            // -------------------------------------
+            // Material Keywords
+            #pragma shader_feature_local _NORMALMAP
+            #pragma shader_feature_local _PARALLAXMAP
+            #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            // Universal Pipeline keywords
+            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             ENDHLSL
         }
     }

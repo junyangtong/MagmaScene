@@ -1,3 +1,8 @@
+float4 _SpecNoiseSize;
+TEXTURE2D(_MagmaNoiseMap);
+SAMPLER(sampler_MagmaNoiseMap);
+float4 _MagmaNoiseMap_ST;
+
 // 柏林噪声
 float2 radom2(float2 i)
 {
@@ -24,6 +29,19 @@ float noise (float2 uv)
     float noise = lerp(lerp(a,b,u.x),lerp(c,d,u.x),u.y);
 
     return noise;
+}
+float RealTimePerlinNoises(float2 warpUv)
+{
+    float mulnoise = smoothstep(0.14,0.15,noise(warpUv*_SpecNoiseSize.x));
+    mulnoise -= smoothstep(0.185,0.29,noise(warpUv*_SpecNoiseSize.x));
+    mulnoise += smoothstep(0.185,0.19,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;
+    mulnoise -= smoothstep(0.12,0.4,noise(warpUv*_SpecNoiseSize.y))*_SpecNoiseSize.w;
+    return mulnoise;
+}
+float SamplePerlinNoises(float2 warpUv)
+{
+    float mulnoise = SAMPLE_TEXTURE2D(_MagmaNoiseMap, sampler_MagmaNoiseMap, warpUv * _MagmaNoiseMap_ST.xy + _MagmaNoiseMap_ST.zw * _Time.y).rgb;
+    return mulnoise;
 }
 
 // 计算水面波形
@@ -54,29 +72,3 @@ float noise (float2 uv)
         o.wavePos.y = A * sinC / 6;
         return o;
     }
-
-    // 动态设置曲面细分因子
-    bool TriangleIsBelowClipPlane (float3 p0, float3 p1, float3 p2, int planeIndex, float bias) 
-            {
-                float4 plane = unity_CameraWorldClipPlanes[planeIndex];
-                return
-                    dot(float4(p0, 1), plane) < bias &&
-                    dot(float4(p1, 1), plane) < bias &&
-                    dot(float4(p2, 1), plane) < bias;
-            }
-            
-            bool TriangleIsCulled (float3 p0, float3 p1, float3 p2, float bias) {
-                return
-                    TriangleIsBelowClipPlane(p0, p1, p2, 0, bias) ||
-                    TriangleIsBelowClipPlane(p0, p1, p2, 1, bias) ||
-                    TriangleIsBelowClipPlane(p0, p1, p2, 2, bias) ||
-                    TriangleIsBelowClipPlane(p0, p1, p2, 3, bias);
-            }
-            // 随着距相机的距离减少细分数
-            float CalcDistanceTessFactor(float4 vertex, float minDist, float maxDist, float tess)
-            {
-                float3 worldPosition = TransformObjectToWorld(vertex.xyz);
-                float dist = distance(worldPosition,  GetCameraPositionWS());
-                float f = clamp(1.0 - (dist - minDist) / (maxDist - minDist), 0.01, 1.0) * tess;
-                return (f);
-            }

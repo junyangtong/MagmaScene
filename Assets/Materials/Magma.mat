@@ -11,8 +11,11 @@ Material:
   m_Shader: {fileID: 4800000, guid: 94d85e942e091994aadfa7ebe4ae3eff, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_ValidKeywords:
+  - _T1_ON
+  m_InvalidKeywords:
+  - RealTimeNoise
+  - _REALTIMENOISE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -39,6 +42,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 1fc952f953e634f43adda96d0febff93, type: 3}
         m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0.01, y: 0.01}
+    - _MagmaNoiseMap:
+        m_Texture: {fileID: 2800000, guid: c89ee936b5ddde2409f3e34168af37de, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
+        m_Offset: {x: 0, y: 0}
     - _MagmaSpecMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -74,12 +81,14 @@ Material:
     - _FlowSpeed: 1
     - _FresnelScale: 15
     - _MagmaThickness: 0.1
-    - _MaxTessDistance: 40
+    - _MaxTessDistance: 60
     - _MinTessDistance: 10
+    - _Noise: 0
     - _NormalIntensity: 0.1
     - _NormalScale: 40
     - _Normalstrength: 1
     - _RainInt: 1
+    - _RealTimeNoise: 1
     - _RimOffest: 0
     - _RimThresholdOffest: -0.4
     - _RimhresholdOffest: -0.02
@@ -94,6 +103,7 @@ Material:
     - _StoneHeight: 1
     - _StoneSmoothThreshold: 0.45
     - _StoneThresholdOffest: -0.16
+    - _T1: 1
     - _Tess: 32
     - _WarpInt: 0.3
     - _WaveLength: 8.41
