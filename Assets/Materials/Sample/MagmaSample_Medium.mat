@@ -7,13 +7,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MagmaSample1
+  m_Name: MagmaSample_Medium
   m_Shader: {fileID: 4800000, guid: 94d85e942e091994aadfa7ebe4ae3eff, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _T1_ON
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - RealTimeNoise
+  - _REALTIMENOISE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -25,7 +27,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AOMap:
-        m_Texture: {fileID: 2800000, guid: 79addfaceb1dacc4593b212e0e32b5e7, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3bf207bebc5b1964882c34fe494b82c0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
@@ -33,16 +35,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightMap:
-        m_Texture: {fileID: 2800000, guid: 01c7c1c3ff6168d4d9c71fbb13a7fe03, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2f7589690955178408772fe05baf0c7c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MagmaMap:
         m_Texture: {fileID: 2800000, guid: 1fc952f953e634f43adda96d0febff93, type: 3}
-        m_Scale: {x: 0.3, y: 0.3}
+        m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0.01, y: 0.01}
     - _MagmaNoiseMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: c89ee936b5ddde2409f3e34168af37de, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     - _MagmaSpecMap:
         m_Texture: {fileID: 0}
@@ -50,10 +52,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MagmaWarpMap:
         m_Texture: {fileID: 2800000, guid: c89ee936b5ddde2409f3e34168af37de, type: 3}
-        m_Scale: {x: 0.5, y: 0.5}
+        m_Scale: {x: 0.05, y: 0.05}
         m_Offset: {x: 0.01, y: 0.01}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: 1306df39c5f3c6f43bf6116d053f7c7d, type: 3}
+        m_Texture: {fileID: 2800000, guid: c3aecc0726b0ce643982b7ba2fd4622d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RainTex:
@@ -61,7 +63,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _StoneMap:
-        m_Texture: {fileID: 2800000, guid: d2eeb0cde67c9484d98713acd4e62170, type: 3}
+        m_Texture: {fileID: 2800000, guid: ada0e376f68e5794ba6951d256e0a29c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WarpMap:
@@ -71,26 +73,28 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaRange: 1
-    - _Amplitude: 0.03
+    - _Amplitude: 0.1
     - _DepthRange: 1
     - _DiffRange: 0.49
-    - _DisStrength: 1
-    - _EdgeOffest: 0.019
+    - _DisStrength: 1.64
+    - _EdgeOffest: 0.03
     - _FlowSpeed: 1
     - _FresnelScale: 15
-    - _MagmaThickness: 0.1
-    - _MaxTessDistance: 170
-    - _MinTessDistance: 1
+    - _MagmaThickness: 0.16
+    - _MaxTessDistance: 14
+    - _MinTessDistance: 10
+    - _Noise: 0
     - _NormalIntensity: 0.1
     - _NormalScale: 40
     - _Normalstrength: 1
     - _RainInt: 1
+    - _RealTimeNoise: 1
     - _RimOffest: 0
-    - _RimThresholdOffest: -0.09
+    - _RimThresholdOffest: -0.13
     - _RimhresholdOffest: -0.02
-    - _SmoothThreshold: 0.07
+    - _SmoothThreshold: 0.0419
     - _SmoothThresholdDown: 0.0318
-    - _SmoothThresholdRim: 0.113
+    - _SmoothThresholdRim: 0.103
     - _SmoothThresholdUp: 0.1
     - _SpecNoiseSize: 25.3
     - _SpecularRange: 200
@@ -100,9 +104,11 @@ Material:
     - _StoneSmoothThreshold: 0.45
     - _StoneThresholdOffest: -0.16
     - _T1: 1
-    - _Tess: 32
+    - _T2: 0
+    - _T3: 0
+    - _Tess: 14
     - _WarpInt: 0.3
-    - _WaveLength: 2.99
+    - _WaveLength: 8.41
     - _WaveXSpeed: 1
     - _WaveYSpeed: -1
     - _WindDir: 0
@@ -113,7 +119,7 @@ Material:
     - _Diffcol: {r: 1, g: 0.1273585, b: 0.1273585, a: 1}
     - _EdgeCol: {r: 0, g: 0, b: 0, a: 1}
     - _EdgeCol2: {r: 2.4622889, g: 0.45776665, b: 0, a: 1}
-    - _FlowDir: {r: 0.2, g: 0.5, b: 0.5, a: 0.34}
+    - _FlowDir: {r: 4, g: 10, b: 5, a: 3}
     - _Foam: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelCol: {r: 1, g: 1, b: 1, a: 1}
     - _MagmaCol: {r: 1, g: 0.45460603, b: 0.10849059, a: 1}
@@ -122,10 +128,10 @@ Material:
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimCol: {r: 18.287483, g: 0.7756208, b: 0, a: 1}
     - _RippleColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowCol: {r: 0.754717, g: 0.754717, b: 0.754717, a: 0}
+    - _ShadowCol: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 0}
     - _SpecCol1: {r: 0.9017273, g: 0.29742837, b: 0, a: 1}
     - _SpecCol2: {r: 1, g: 0.6156863, b: 0, a: 1}
-    - _SpecNoiseSize: {r: 3.43, g: 1.57, b: 0, a: 0.54}
+    - _SpecNoiseSize: {r: 0.6, g: 1.2, b: 0, a: 0.54}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _StoneCol: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 1}
     - _StoneCol1: {r: 0.73333335, g: 0.48627454, b: 0.48627454, a: 1}

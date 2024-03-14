@@ -29,6 +29,7 @@ Shader "Magma/Magma"
 
         [Header(Shadow)]
         _ShadowCol          ("接受投影颜色", Color) = (0,0,0,0)
+        [Toggle] _T2        ("接受阴影?", Float) = 0
 
         [Header(Texture)]
         _HeightMap          ("置换贴图",2D)    = "white" {}
@@ -37,7 +38,7 @@ Shader "Magma/Magma"
         _AOMap              ("环境光遮蔽贴图",2D)    = "white" {}
         _MagmaMap           ("岩浆底层噪声贴图",2D)    = "white" {}
         _MagmaWarpMap       ("岩浆高光扰动贴图",2D)    = "white" {}
-        _MagmaNoiseMap       ("岩浆高光噪声贴图",2D)    = "white" {}
+        _MagmaNoiseMap      ("岩浆高光噪声贴图",2D)    = "white" {}
         
         [Header(Tessellation)]
         _Tess               ("细分程度", Range(1,32)) = 20
@@ -85,11 +86,11 @@ Shader "Magma/Magma"
             #pragma prefer_hlslcc gles
             #pragma exclude_renderers d3d11_9x
             #pragma target 4.6
-
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
 			#pragma multi_compile _ Anti_Aliasing_ON
             #pragma shader_feature _T1_ON
+            #pragma shader_feature _T2_ON
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -137,15 +138,13 @@ Shader "Magma/Magma"
             TEXTURE2D(_AOMap);
             SAMPLER(sampler_AOMap);
             TEXTURE2D(_StoneMap);
+            SAMPLER(sampler_StoneMap);
             TEXTURE2D(_MagmaMap);
             SAMPLER(sampler_MagmaMap);
             float4 _MagmaMap_ST;
             TEXTURE2D(_MagmaWarpMap);
             SAMPLER(sampler_MagmaWarpMap);
             float4 _MagmaWarpMap_ST;
-
-            // 贴图采样器
-            SamplerState smp_Point_Repeat;
 
             // 顶点着色器的输入
             struct Attributes
@@ -297,7 +296,9 @@ Shader "Magma/Magma"
                 o.scrPos = ComputeScreenPos(o.vertex);
 				o.color = v.color;
 				o.waveOffset = waveOffset;
+                #ifdef _T2_ON
                 o.shadowCoord = TransformWorldToShadowCoord(o.posWS);
+                #endif
                 return o;
 			}
 
@@ -327,9 +328,13 @@ Shader "Magma/Magma"
             float4 FragmentProgram(Varyings i) : SV_TARGET 
             {   
                 // 准备向量
-                Light light = GetMainLight(i.shadowCoord);//获取主光源数据
+                #ifdef _T2_ON
+                    Light light = GetMainLight(i.shadowCoord);          // 获取主光源数据
+                    float shadow = MainLightRealtimeShadow(i.shadowCoord);
+                #else
+                    Light light = GetMainLight();      // 获取主光源数据
+                #endif
                 float2 uv = i.uv;
-                float shadow = MainLightRealtimeShadow(i.shadowCoord);
                 float3 lDir = normalize(light.direction);
                 float3 nDirWS = (0,0,0);
                 float3 nDirTS = normalize(UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uv * _HeightMap_ST.xy + _HeightMap_ST.zw)));
@@ -341,7 +346,7 @@ Shader "Magma/Magma"
                 // 提取信息
                 float2 uvWS = i.posWS.xz;
                 float3 magmaBaseColMask = SAMPLE_TEXTURE2D(_MagmaMap, sampler_MagmaMap, uvWS * _MagmaMap_ST.xy + _MagmaMap_ST.zw * _Time.y).rgb;
-                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap, smp_Point_Repeat, uv * _HeightMap_ST.xy + _HeightMap_ST.zw).rgb;
+                float3 stoneBaseCol = SAMPLE_TEXTURE2D(_StoneMap, sampler_StoneMap, uv * _HeightMap_ST.xy + _HeightMap_ST.zw).rgb;
                 float3 magmaWarp = SAMPLE_TEXTURE2D(_MagmaWarpMap, sampler_MagmaWarpMap, uvWS * _MagmaWarpMap_ST.xy + _MagmaWarpMap_ST.zw * _Time.y).rgb;
                 float aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap, uv * _HeightMap_ST.xy + _HeightMap_ST.zw).r;
 
@@ -357,11 +362,10 @@ Shader "Magma/Magma"
                     
                     float2 warpUv = uvWS + uvBias + float2(_FlowDir.x * _Time.x, _FlowDir.y * _Time.x);
                     float specNoise = 0;
-
                     #ifdef _T1_ON
-                    specNoise = RealTimePerlinNoises(warpUv);
+                        specNoise = RealTimePerlinNoises(warpUv);
                     #else
-                    specNoise = SamplePerlinNoises(warpUv);
+                        specNoise = SamplePerlinNoises(warpUv);
                     #endif
                     float3 specCol = lerp(_SpecCol1.rgb, _SpecCol2.rgb, (1 - specNoise)) * specNoise;
                     float3 edgeCol = _EdgeCol.rgb;
@@ -372,8 +376,9 @@ Shader "Magma/Magma"
 
                 // 混合
                 float3 finalRGB = lerp(stoneCol, magmaCol, i.mask2);
-                finalRGB = lerp(finalRGB * _ShadowCol.rgb, finalRGB, shadow);
-                
+                #ifdef _T2_ON
+                    finalRGB = lerp(finalRGB * _ShadowCol.rgb, finalRGB, shadow);
+                #endif
                 return float4(finalRGB, 1.0);
                 //return shadow;
             }
