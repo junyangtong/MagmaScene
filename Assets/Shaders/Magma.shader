@@ -44,7 +44,7 @@ Shader "Magma/Magma"
         _Tess               ("细分程度", Range(1,32)) = 20
         _MaxTessDistance    ("细分最大距离", Range(1,100)) = 20
         _MinTessDistance    ("细分最小距离", Range(1,50)) = 1
-        _DisStrength        ("视锥体裁剪", Range(0,2)) = 1
+        _DisStrength        ("视锥体裁剪", Range(0,10)) = 1
         _MagmaThickness     ("岩浆厚度", Range(0,1)) = 0
 
         [Header(Wave)]

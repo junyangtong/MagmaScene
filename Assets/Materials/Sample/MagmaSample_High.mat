@@ -81,7 +81,7 @@ Material:
     - _FlowSpeed: 1
     - _FresnelScale: 15
     - _MagmaThickness: 0.16
-    - _MaxTessDistance: 15
+    - _MaxTessDistance: 13
     - _MinTessDistance: 4
     - _Noise: 0
     - _NormalIntensity: 0.1

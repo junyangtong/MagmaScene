@@ -105,7 +105,7 @@ Material:
     - _T1: 0
     - _T2: 0
     - _T3: 0
-    - _Tess: 10
+    - _Tess: 6
     - _WarpInt: 0.3
     - _WaveLength: 8.41
     - _WaveXSpeed: 1
