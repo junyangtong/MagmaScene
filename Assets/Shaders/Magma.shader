@@ -5,31 +5,30 @@ Shader "Magma/Magma"
         [Header(Magma)]
         [HDR]_MagmaCol1             ("岩浆颜色1", Color) = (1,1,1,1)
         _MagmaCol2                  ("岩浆颜色2", Color) = (1,1,1,1)
-        _EdgeOffest                 ("岩浆边缘范围偏移", Range(-0.1,0.1)) = 0
-        _EdgeCol                    ("岩浆边缘颜色", Color) = (1,1,1,1)
+        _EdgeOffest                 ("岩浆边缘阴影范围偏移", Range(-0.1,0.1)) = 0
+        _EdgeCol                    ("岩浆边缘阴影颜色", Color) = (1,1,1,1)
+        _SmoothThreshold            ("岩浆边缘阴影平滑阈值", Range(0,0.1)) = 0
         [HDR]_RimCol            ("岩浆边缘光颜色", Color) = (1,1,1,1)
-        _SmoothThresholdUp      ("边缘着色平滑阈值（向上）", Range(0,0.1)) = 0
-        _SmoothThresholdDown    ("边缘着色平滑阈值（向下）", Range(0,0.1)) = 0
-        _SmoothThresholdRim     ("着色平滑阈值边缘光", Range(0,0.5)) = 0
+        _SmoothThresholdRim     ("岩浆边缘光平滑阈值", Range(0,0.5)) = 0
         _RimThresholdOffest     ("边缘光范围阈值", Range(-1,1)) = -0.2
         _SpecNoiseSize          ("高光噪声大小XY  强度W", Vector) = (10,0,0,0)
         [HDR]_SpecCol1          ("岩浆高光颜色1", Color) = (1,1,1,1)
         _SpecCol2               ("岩浆高光颜色2", Color) = (1,1,1,1)
         _FlowDir                ("流动方向XY", Vector) = (2,2,0,0)
-        [Toggle] _T1            ("实时计算噪声纹理", Float) = 0
+        [Toggle] _T1            ("实时计算噪声纹理?", Float) = 0
+
         [Header(Stone)]
         _StoneCol1              ("岩石颜色暗面", Color) = (1,1,1,1)
         _StoneCol2              ("岩石颜色亮面", Color) = (1,1,1,1)
-        _DiffRange              ("暗面分割阈值", Float) = 1
-        _StoneHeight            ("岩石高度", Float) = 1
-        _YThreshold             ("岩浆平面高度", Float) = 1
-        _YThresholdOffest       ("岩浆平面高度偏移", Range(0,0.3)) = 0.1
-        _StoneThresholdOffest   ("岩石发光范围阈值", Range(-1,1)) = 0.0
-        _StoneSmoothThreshold   ("岩石发光范围平滑度", Range(-1,1)) = 0.0
+        _DiffRange              ("明暗交界线阈值", Float) = 1
+        _StoneHeight            ("岩石高度偏移", Float) = 1
+        _YThreshold             ("岩浆平面高度偏移", Float) = 1
+        _StoneThresholdOffest   ("岩石自发光范围阈值", Range(-1,1)) = 0.0
+        _StoneSmoothThreshold   ("岩石自发光范围平滑度", Range(-1,1)) = 0.0
         [HDR]_StoneEmissCol     ("岩石自发光颜色", Color) = (1,1,1,1)
 
         [Header(Shadow)]
-        _ShadowCol          ("阴影颜色", Color) = (0,0,0,0)
+        _ShadowCol          ("接受投影颜色", Color) = (0,0,0,0)
 
         [Header(Texture)]
         _HeightMap          ("置换贴图",2D)    = "white" {}
@@ -46,7 +45,8 @@ Shader "Magma/Magma"
         _MinTessDistance    ("细分最小距离", Range(1,50)) = 1
         _DisStrength        ("视锥体裁剪", Range(0,2)) = 1
         _MagmaThickness     ("岩浆厚度", Range(0,1)) = 0
-        [Header(Genstner)]
+
+        [Header(Wave)]
         _Steepness          ("重力",Range(0,5)) = 0.8
         _Amplitude          ("振幅",Range(0,0.2)) = 0.06
         _WaveLength         ("波长",Range(0,10)) = 1
@@ -113,8 +113,7 @@ Shader "Magma/Magma"
             float _EdgeOffest;
             float4 _EdgeCol;
             float4 _RimCol;
-            float _SmoothThresholdUp;
-            float _SmoothThresholdDown;
+            float _SmoothThreshold;
             float _SmoothThresholdRim;
             float _RimThresholdOffest;
             float4 _SpecCol1;
@@ -122,7 +121,6 @@ Shader "Magma/Magma"
             float4 _FlowDir;
             float _StoneHeight;
             float _YThreshold;
-            float _YThresholdOffest;
             float _StoneThresholdOffest;
             float _StoneSmoothThreshold;
             float4 _StoneEmissCol;
@@ -166,8 +164,8 @@ Shader "Magma/Magma"
                 float3 nDirWS : NORMAL_WS;
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float3 posWS:TEXCOORD1;
-                float4 scrPos	 :TEXCOORD2;  
+                float3 posWS : TEXCOORD1;
+                float4 scrPos :TEXCOORD2;  
                 float3 tDirWS : TEXCOORD3;
                 float3 bDirWS : TEXCOORD4;
                 float3 waveOffset : TEXCOORD5;
@@ -264,7 +262,7 @@ Shader "Magma/Magma"
                 float HeightMap = SAMPLE_TEXTURE2D_LOD(_HeightMap, sampler_HeightMap, v.uv * _HeightMap_ST.xy + _HeightMap_ST.zw, 0).r;
                 v.vertex.xyz += v.normal * HeightMap * _StoneHeight;
 
-                o.posWS = TransformObjectToWorld(v.vertex);
+                o.posWS = TransformObjectToWorld(v.vertex.xyz);
 
                 // 计算水面波形
                 for(int i = 0; i < 6; i++)
@@ -275,8 +273,8 @@ Shader "Magma/Magma"
                 
                 // 计算遮罩
                 
-                float mask = smoothstep(o.posWS.y - _SmoothThresholdUp, o.posWS.y + _SmoothThresholdUp, waveOffset.y + _YThreshold + _YThresholdOffest);
-                float mask2 = smoothstep(o.posWS.y - _SmoothThresholdDown, o.posWS.y + _SmoothThresholdDown, waveOffset.y + _YThreshold + (_YThresholdOffest - _EdgeOffest));
+                float mask = smoothstep(o.posWS.y - 0.1, o.posWS.y + 0.1, waveOffset.y + _YThreshold);
+                float mask2 = smoothstep(o.posWS.y - _SmoothThreshold, o.posWS.y + _SmoothThreshold, waveOffset.y + _YThreshold - _EdgeOffest);
                 float mask3 = smoothstep(o.posWS.y - _SmoothThresholdRim, o.posWS.y + _SmoothThresholdRim, waveOffset.y + _YThreshold + _RimThresholdOffest);
                 o.mask = clamp(mask, 0, 1);
                 o.mask2 = clamp(mask2, 0, 1);

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Magma1
+  m_Name: MagmaSample1
   m_Shader: {fileID: 4800000, guid: 94d85e942e091994aadfa7ebe4ae3eff, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -39,6 +39,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 1fc952f953e634f43adda96d0febff93, type: 3}
         m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0.01, y: 0.01}
+    - _MagmaNoiseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MagmaSpecMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -69,6 +73,7 @@ Material:
     - _Amplitude: 0.03
     - _DepthRange: 1
     - _DiffRange: 0.49
+    - _DisStrength: 1
     - _EdgeOffest: 0.019
     - _FlowSpeed: 1
     - _FresnelScale: 15
@@ -93,6 +98,7 @@ Material:
     - _StoneHeight: 1
     - _StoneSmoothThreshold: 0.45
     - _StoneThresholdOffest: -0.16
+    - _T1: 0
     - _Tess: 32
     - _WarpInt: 0.3
     - _WaveLength: 2.99
@@ -115,6 +121,7 @@ Material:
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimCol: {r: 18.287483, g: 0.7756208, b: 0, a: 1}
     - _RippleColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowCol: {r: 0.754717, g: 0.754717, b: 0.754717, a: 0}
     - _SpecCol1: {r: 0.9017273, g: 0.29742837, b: 0, a: 1}
     - _SpecCol2: {r: 1, g: 0.6156863, b: 0, a: 1}
     - _SpecNoiseSize: {r: 8, g: 10, b: 0, a: 0.54}

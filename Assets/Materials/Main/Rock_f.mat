@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Rock_f
+  m_Shader: {fileID: 4800000, guid: 73c3fa600db143e47a36da284bf2d32b, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AOMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainMap:
+        m_Texture: {fileID: 2800000, guid: d2eeb0cde67c9484d98713acd4e62170, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: d2eeb0cde67c9484d98713acd4e62170, type: 3}
+        m_Scale: {x: 5, y: 5}
+        m_Offset: {x: 0, y: 0}
+    - _NormaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: c3aecc0726b0ce643982b7ba2fd4622d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WarpTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ContactColHeight: 1.29
+    - _DiffStep: 0.662
+    - _SpecPow: 1
+    m_Colors:
+    - _BaseColor1: {r: 0.6792453, g: 0.509434, b: 0.509434, a: 1}
+    - _BaseColor2: {r: 1, g: 1, b: 1, a: 0}
+    - _ContactCol: {r: 1.490566, g: 0.056399792, b: 0, a: 1}
+    - _ContactEmissCol: {r: 16.436897, g: 1.5414445, b: 0, a: 1}
+    - _EmissCol: {r: 1, g: 0.35038805, b: 0.07075471, a: 1}
+    - _EmissVector: {r: 0, g: -1, b: -1, a: -0.87}
+    - _ShadowCol: {r: 0.4245283, g: 0.11814703, b: 0.11814703, a: 1}
+    - _SpecCol: {r: 1, g: 1, b: 1, a: 1}
+    - _Speed: {r: 1, g: 1, b: 1, a: 1}
+    - _WaterColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
